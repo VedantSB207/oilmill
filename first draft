@@ -1,0 +1,500 @@
+def authenticate(user_id, password):
+    # Replace with your own authentication logic
+    # In a real-world scenario, you would typically use a database for user management and authentication
+    users = {
+        "admin": "admin_password",
+        "office": "office_password",
+        "ground": "ground_password",
+        "mill": "mill_password"
+
+    }
+pip install requests
+pip install pyfcm
+
+
+from pyfcm import FCMNotification
+
+def send_mobile_notification(api_key, registration_id, title, message):
+    push_service = FCMNotification(api_key=api_key)
+    result = push_service.notify_single_device(
+        registration_id=registration_id,
+        message_title=title,
+        message_body=message
+    )
+    
+    if result["success"] == 1:
+        print("Notification sent successfully!")
+    else:
+        print("Notification sending failed.")
+
+# Example usage:
+api_key = "your_fcm_api_key"
+registration_id = "device_registration_id"  # Obtain this from the device
+notification_title = "New Entry Notification"
+notification_message = "A new entry has been made by the user!"
+
+send_mobile_notification(api_key, registration_id, notification_title, notification_message)
+
+
+
+
+    import requests
+
+url = "https://www.example.com"
+
+try:
+    response = requests.get(url)
+    response.raise_for_status()  # Raise an exception for bad status codes
+    print("Request successful!")
+    print("Response content:")
+    print(response.text)
+except requests.exceptions.RequestException as e:
+    print("Request error:", e)
+
+    if user_id in users and users[user_id] == password:
+        return True
+    return False
+
+def main():
+    print("Welcome to the Oil Mill App")
+    user_id = input("Enter your user ID: ")
+    password = input("Enter your password: ")
+
+    if authenticate(user_id, password):
+        if user_id == "admin":
+            print("Admin login successful.")
+        elif user_id == "office":
+            print("Office user login successful.")
+        elif user_id == "ground":
+            print("Ground user login successful.")
+        elif user_id == "mill":
+            print("Mill user login successful.")
+    else:
+        print("Login failed. Invalid user ID or password.")
+
+if __name__ == "__main__":
+    main()
+
+
+11111111111111111
+
+
+
+import tkinter as tk
+from tkinter import simpledialog, messagebox
+import sqlite3
+from datetime import date
+
+class OfficeApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Office User App")
+
+        self.menu_options = ["Select Option", "Purchase", "Sales", "Balances"]
+        self.selected_option = tk.StringVar(root)
+        self.selected_option.set(self.menu_options[0])
+
+        self.option_menu = tk.OptionMenu(root, self.selected_option, *self.menu_options)
+        self.option_menu.pack()
+
+        self.select_button = tk.Button(root, text="Select", command=self.open_selected_window)
+        self.select_button.pack()
+
+        # Create or connect to the SQLite database
+        self.conn = sqlite3.connect("oil_mill.db")
+        self.cursor = self.conn.cursor()
+        self.create_table()
+
+    def create_table(self):
+        self.cursor.execute('''CREATE TABLE IF NOT EXISTS transactions (
+                                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                date TEXT,
+                                option TEXT,
+                                details TEXT)''')
+        self.conn.commit()
+
+    def open_selected_window(self):
+        selected = self.selected_option.get()
+        if selected == "Purchase":
+            self.open_purchase_window()
+        elif selected == "Sales":
+            self.open_sales_window()
+        elif selected == "Balances":
+            self.open_balances_window()
+
+    def open_purchase_window(self):
+        # Collect user inputs
+        name = simpledialog.askstring("Purchase", "Enter Name:")
+        station = simpledialog.askstring("Purchase", "Enter Station:")
+        rate = simpledialog.askfloat("Purchase", "Enter Rate:")
+        freight = simpledialog.askfloat("Purchase", "Enter Freight:")
+        tax = simpledialog.askfloat("Purchase", "Enter Tax:")
+        broker = simpledialog.askstring("Purchase", "Enter Broker:")
+        quantity = simpledialog.askfloat("Purchase", "Enter Quantity:")
+        
+        # Save inputs to the database
+        self.save_to_database("Purchase", name, station, rate, freight, tax, broker, quantity)
+
+    def open_sales_window(self):
+        # Collect user inputs
+        name = simpledialog.askstring("Sales", "Enter Name:")
+        station = simpledialog.askstring("Sales", "Enter Station:")
+        rate = simpledialog.askfloat("Sales", "Enter Rate:")
+        bill = simpledialog.askfloat("Sales", "Enter Bill:")
+        broker = simpledialog.askstring("Sales", "Enter Broker:")
+        freight = simpledialog.askfloat("Sales", "Enter Freight:")
+        quantity = simpledialog.askfloat("Sales", "Enter Quantity:")
+        
+        # Save inputs to the database
+        self.save_to_database("Sales", name, station, rate, bill, broker, freight, quantity)
+
+    def open_balances_window(self):
+        # Collect user inputs
+        name = simpledialog.askstring("Balances", "Enter Name:")
+        station = simpledialog.askstring("Balances", "Enter Station:")
+        broker = simpledialog.askstring("Balances", "Enter Broker:")
+        rate = simpledialog.askfloat("Balances", "Enter Rate:")
+        quantity = simpledialog.askfloat("Balances", "Enter Quantity:")
+        amount = simpledialog.askfloat("Balances", "Enter Amount:")
+        
+        # Save inputs to the database
+        self.save_to_database("Balances", name, station, broker, rate, quantity, amount)
+
+    def save_to_database(self, option, *args):
+        # Get today's date
+        today = date.today().strftime("%Y-%m-%d")
+        
+        # Save inputs to the database
+        details = "\n".join(args)
+        self.cursor.execute('''INSERT INTO transactions (date, option, details)
+                                VALUES (?, ?, ?)''', (today, option, details))
+        self.conn.commit()
+        messagebox.showinfo("Success", f"{option} details saved successfully!")
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = OfficeApp(root)
+    root.mainloop()
+
+pip install pysqlite3
+
+
+
+
+3333333333333333333333
+
+
+
+import tkinter as tk
+from tkinter import simpledialog, messagebox
+import sqlite3
+from datetime import date
+
+class GroundApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Ground User App")
+
+        self.menu_options = ["Select Option", "Loading", "Unloading", "Others"]
+        self.selected_option = tk.StringVar(root)
+        self.selected_option.set(self.menu_options[0])
+
+        self.option_menu = tk.OptionMenu(root, self.selected_option, *self.menu_options)
+        self.option_menu.pack()
+
+        self.select_button = tk.Button(root, text="Select", command=self.open_selected_window)
+        self.select_button.pack()
+
+        # Create or connect to the SQLite database
+        self.conn = sqlite3.connect("oil_mill.db")
+        self.cursor = self.conn.cursor()
+        self.create_table()
+
+    def create_table(self):
+        self.cursor.execute('''CREATE TABLE IF NOT EXISTS ground_entries (
+                                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                date TEXT,
+                                option TEXT,
+                                details TEXT)''')
+        self.conn.commit()
+
+    def open_selected_window(self):
+        selected = self.selected_option.get()
+        if selected == "Unloading":
+            self.open_unloading_window()
+        elif selected == "Loading":
+            self.open_loading_window()
+        elif selected == "Others":
+            self.open_others_window()
+
+    def open_unloading_window(self):
+        unloading_options = ["Select Option", "Sarki", "Bundle", "Others"]
+        selected_option = tk.StringVar(self.root)
+        selected_option.set(unloading_options[0])
+
+        unloading_option_menu = tk.OptionMenu(self.root, selected_option, *unloading_options)
+        unloading_option_menu.pack()
+
+        unloading_select_button = tk.Button(self.root, text="Select", command=lambda: self.open_unloading_selected_window(selected_option.get()))
+        unloading_select_button.pack()
+
+    def open_unloading_selected_window(self, selected):
+        if selected == "Sarki":
+            self.open_sarki_window()
+        elif selected == "Bundle":
+            self.open_bundle_window()
+        elif selected == "Others":
+            self.open_others_window()
+
+    def open_sarki_window(self):
+        station = simpledialog.askstring("Sarki", "Enter Station:")
+        vehicle_no = simpledialog.askstring("Sarki", "Enter Vehicle No:")
+        bag1 = simpledialog.askfloat("Sarki", "Enter Bag 1 Weight:")
+        bag2 = simpledialog.askfloat("Sarki", "Enter Bag 2 Weight:")
+        bag3 = simpledialog.askfloat("Sarki", "Enter Bag 3 Weight:")
+        bag4 = simpledialog.askfloat("Sarki", "Enter Bag 4 Weight:")
+        bag5 = simpledialog.askfloat("Sarki", "Enter Bag 5 Weight:")
+        bag6 = simpledialog.askfloat("Sarki", "Enter Bag 6 Weight:")
+        total_weight = bag1 + bag2 + bag3 + bag4 + bag5 + bag6
+        total_oil = simpledialog.askfloat("Sarki", "Enter Total Oil:")
+        oil_percentage = (total_oil / total_weight) * 100 if total_weight > 0 else 0
+        self.save_to_database("Sarki", station, vehicle_no, bag1, bag2, bag3, bag4, bag5, bag6, total_weight, total_oil, oil_percentage)
+
+    def open_bundle_window(self):
+        qty = simpledialog.askinteger("Bundle", "Enter Quantity:")
+        party_name = simpledialog.askstring("Bundle", "Enter Party Name:")
+        self.save_to_database("Bundle", qty, party_name)
+
+    def open_others_window(self):
+        item = simpledialog.askstring("Others", "Enter Item:")
+        qty = simpledialog.askinteger("Others", "Enter Quantity:")
+        self.save_to_database("Others", item, qty)
+
+    def save_to_database(self, option, *args):
+        today = date.today().strftime("%Y-%m-%d")
+        details = "\n".join(map(str, args))
+        self.cursor.execute('''INSERT INTO ground_entries (date, option, details)
+                                VALUES (?, ?, ?)''', (today, option, details))
+        self.conn.commit()
+        messagebox.showinfo("Success", f"{option} details saved successfully!")
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = GroundApp(root)
+    root.mainloop()
+
+
+
+444444444444444444444
+
+
+import tkinter as tk
+from tkinter import simpledialog, messagebox
+import sqlite3
+from datetime import date
+
+class MillApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Mill User App")
+
+        self.menu_options = ["Select Option", "Running", "Maintenance", "Attendance"]
+        self.selected_option = tk.StringVar(root)
+        self.selected_option.set(self.menu_options[0])
+
+        self.option_menu = tk.OptionMenu(root, self.selected_option, *self.menu_options)
+        self.option_menu.pack()
+
+        self.select_button = tk.Button(root, text="Select", command=self.open_selected_window)
+        self.select_button.pack()
+
+        # Create or connect to the SQLite database
+        self.conn = sqlite3.connect("mill.db")
+        self.cursor = self.conn.cursor()
+        self.create_table()
+
+    def create_table(self):
+        self.cursor.execute('''CREATE TABLE IF NOT EXISTS mill_entries (
+                                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                date TEXT,
+                                option TEXT,
+                                details TEXT)''')
+        self.conn.commit()
+
+    def open_selected_window(self):
+        selected = self.selected_option.get()
+        if selected == "Running":
+            self.open_running_window()
+        elif selected == "Maintenance":
+            self.open_maintenance_window()
+        elif selected == "Attendance":
+            self.open_attendance_window()
+
+    def open_running_window(self):
+        running_options = ["Select Machine", "Machine 1", "Machine 2", "Machine 3", "Machine 4", "Machine 5", "Machine 6", "Machine 7", "Machine 8", "Machine 9", "Machine 10", "Machine 11"]
+        selected_option = tk.StringVar(self.root)
+        selected_option.set(running_options[0])
+
+        running_option_menu = tk.OptionMenu(self.root, selected_option, *running_options)
+        running_option_menu.pack()
+
+        running_select_button = tk.Button(self.root, text="Select", command=lambda: self.open_running_selected_window(selected_option.get()))
+        running_select_button.pack()
+
+    def open_running_selected_window(self, selected):
+        if selected != "Select Machine":
+            on_off_options = ["ON", "OFF"]
+            selected_option = tk.StringVar(self.root)
+            selected_option.set(on_off_options[0])
+
+            on_off_option_menu = tk.OptionMenu(self.root, selected_option, *on_off_options)
+            on_off_option_menu.pack()
+
+            on_off_select_button = tk.Button(self.root, text="Select", command=lambda: self.save_running_to_database(selected, selected_option.get()))
+            on_off_select_button.pack()
+
+    def save_running_to_database(self, machine, status):
+        today = date.today().strftime("%Y-%m-%d")
+        details = f"{machine}: {status}"
+        self.cursor.execute('''INSERT INTO mill_entries (date, option, details)
+                                VALUES (?, ?, ?)''', (today, "Running", details))
+        self.conn.commit()
+        messagebox.showinfo("Success", f"Running details saved successfully!")
+
+    def open_maintenance_window(self):
+        maintenance_options = ["Select Machine", "Machine 1", "Machine 2", "Machine 3", "Machine 4", "Machine 5", "Machine 6", "Machine 7", "Machine 8", "Machine 9", "Machine 10", "Machine 11"]
+        selected_option = tk.StringVar(self.root)
+        selected_option.set(maintenance_options[0])
+
+        maintenance_option_menu = tk.OptionMenu(self.root, selected_option, *maintenance_options)
+        maintenance_option_menu.pack()
+
+        maintenance_select_button = tk.Button(self.root, text="Select", command=lambda: self.open_maintenance_date_window(selected_option.get()))
+        maintenance_select_button.pack()
+
+    def open_maintenance_date_window(self, machine):
+        date_input = simpledialog.askstring("Maintenance", f"Enter Date for {machine} Maintenance (YYYY-MM-DD):")
+        if date_input:
+            self.save_maintenance_to_database(machine, date_input)
+
+    def save_maintenance_to_database(self, machine, date_input):
+        details = f"{machine} Maintenance: {date_input}"
+        self.cursor.execute('''INSERT INTO mill_entries (date, option, details)
+                                VALUES (?, ?, ?)''', (date_input, "Maintenance", details))
+        self.conn.commit()
+        messagebox.showinfo("Success", f"Maintenance details saved successfully!")
+
+    def open_attendance_window(self):
+        names = simpledialog.askstring("Attendance", "Enter Names of Labours Available (comma-separated):")
+        if names:
+            self.save_attendance_to_database(names)
+
+    def save_attendance_to_database(self, names):
+        today = date.today().strftime("%Y-%m-%d")
+        details = f"Labours Available: {names}"
+        self.cursor.execute('''INSERT INTO mill_entries (date, option, details)
+                                VALUES (?, ?, ?)''', (today, "Attendance", details))
+        self.conn.commit()
+        messagebox.showinfo("Success", "Attendance details saved successfully!")
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = MillApp(root)
+    root.mainloop()
+
+
+5555555555555555555555555555555
+
+
+
+import tkinter as tk
+from tkinter import ttk
+import sqlite3
+
+class AdminApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Admin User App")
+
+        self.menu_options = ["Select Option", "Purchase", "Sales", "Percentage", "Dispatch", "Omill"]
+        self.selected_option = tk.StringVar(root)
+        self.selected_option.set(self.menu_options[0])
+
+        self.option_menu = tk.OptionMenu(root, self.selected_option, *self.menu_options)
+        self.option_menu.pack()
+
+        self.select_button = tk.Button(root, text="Select", command=self.open_selected_window)
+        self.select_button.pack()
+
+        self.tree = ttk.Treeview(root, columns=("Date", "Details"))
+        self.tree.heading("#1", text="Date")
+        self.tree.heading("#2", text="Details")
+        self.tree.pack()
+
+        # Create or connect to the SQLite database
+        self.conn = sqlite3.connect("admin.db")
+        self.cursor = self.conn.cursor()
+        self.create_table()
+
+    def create_table(self):
+        self.cursor.execute('''CREATE TABLE IF NOT EXISTS admin_entries (
+                                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                option TEXT,
+                                date TEXT,
+                                details TEXT)''')
+        self.conn.commit()
+
+    def open_selected_window(self):
+        selected = self.selected_option.get()
+        if selected == "Purchase":
+            self.pull_purchase_data()
+        elif selected == "Sales":
+            self.pull_sales_data()
+        elif selected == "Percentage":
+            self.pull_percentage_data()
+        elif selected == "Dispatch":
+            self.pull_dispatch_data()
+        elif selected == "Omill":
+            self.open_omill_menu()
+
+    def pull_purchase_data(self):
+        self.pull_data("Purchase")
+
+    def pull_sales_data(self):
+        self.pull_data("Sales")
+
+    def pull_percentage_data(self):
+        self.pull_data("Percentage")
+
+    def pull_dispatch_data(self):
+        self.pull_data("Dispatch")
+
+    def pull_data(self, option):
+        self.cursor.execute('''SELECT date, details FROM office_entries WHERE option = ?''', (option,))
+        data = self.cursor.fetchall()
+        self.display_data(data)
+
+    def open_omill_menu(self):
+        omill_options = ["Select Option", "Running", "Maintenance", "Attendance"]
+        selected_option = tk.StringVar(self.root)
+        selected_option.set(omill_options[0])
+
+        omill_option_menu = tk.OptionMenu(self.root, selected_option, *omill_options)
+        omill_option_menu.pack()
+
+        omill_select_button = tk.Button(self.root, text="Select", command=lambda: self.pull_omill_data(selected_option.get()))
+        omill_select_button.pack()
+
+    def pull_omill_data(self, selected):
+        if selected != "Select Option":
+            self.pull_data(selected)
+
+    def display_data(self, data):
+        self.tree.delete(*self.tree.get_children())
+        for entry in data:
+            self.tree.insert("", "end", values=entry[1:])
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = AdminApp(root)
+    root.mainloop()
